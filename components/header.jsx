@@ -24,6 +24,7 @@ const Header = async () => {
             width={200}
             height={60}
             className="h-12 py-1 w-auto object-contain"
+            priority
           />
         </Link>
         <div className="flex items-center space-x-2 md:space-x-4">
