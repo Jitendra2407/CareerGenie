@@ -31,11 +31,11 @@ export async function updateUser(data) {
               industry: data.industry,
               salaryRanges: [], // Default empty array
               growthRate: 0, // Default value
-              demandLevel: "Medium", // Default value
+              demandLevel: "MEDIUM", // Default value
               topSkills: [], // Default empty array
-              marketOutlook: "Neutral", // Default value
+              marketOutlook: "NEUTRAL", // Default value
               keyTrends: [], // Default empty array
-              recomondedSkills: [], // Default empty array
+              recommendedSkills: [], // Default empty array
               nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             },
           });
@@ -43,12 +43,12 @@ export async function updateUser(data) {
         // Update the user
         const updateUser = await tx.user.update({
           where: {
-            id: userId,
+            clerkUserId: userId,
           },
           data: {
             industry: data.industry,
             experience: data.experience,
-            bio: bio.data,
+            bio: data.bio,
             skills: data.skills,
           },
         });
@@ -59,10 +59,10 @@ export async function updateUser(data) {
         timeout: 10000, // default 5000
       }
     );
-    return result.user;
+    return {success: true, ...result};
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
-    throw new Error("Failed to update profile");
+    throw new Error("Failed to update profile" + error.message);
   }
 }
 
