@@ -5,9 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
-});
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export const generateAIInsights = async (industry) => {
   const prompt = `
@@ -17,9 +15,9 @@ export const generateAIInsights = async (industry) => {
               { "role": "string", "min": number, "max": number, "median": number, "location": "string" }
             ],
             "growthRate": number,
-            "demandLevel": "High" | "Medium" | "Low",
+            "demandLevel": "HIGH" | "MEDIUM" | "LOW",
             "topSkills": ["skill1", "skill2"],
-            "marketOutlook": "Positive" | "Neutral" | "Negative",
+            "marketOutlook": "POSITIVE" | "NEUTRAL" | "NEGATIVE",
             "keyTrends": ["trend1", "trend2"],
             "recommendedSkills": ["skill1", "skill2"]
           }
@@ -33,8 +31,8 @@ export const generateAIInsights = async (industry) => {
   const result = await model.generateContent(prompt);
   const response = result.response;
   const text = response.text();
-
-  const cleanedText = text.replace(/```(?:json)?\n/g, "").trim();
+  const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
+  console.log("Raw Gemini Text:", cleanedText); // Log the raw text
   return JSON.parse(cleanedText);
 };
 
@@ -43,24 +41,35 @@ export async function getIndustryInsights() {
   if (!userId) throw new Error("Unauthorized");
 
   const user = await db.user.findUnique({
-    where: {
-      clerkUserId: userId,
+    where: { clerkUserId: userId },
+    include: {
+      IndustryInsight: true,
     },
   });
 
   if (!user) throw new Error("User not found");
 
+  // If no insights exist, generate them
   if (!user.industryInsight) {
-    const insights = generateAIInsights(user.industry);
-    const industryInsight = await db.industryInsight.create({
-      data: {
+    const insights = await generateAIInsights(user.industry);
+
+    const industryInsight = await db.industryInsight.upsert({
+      // data: {
+      //   industry: user.industry,
+      //   ...insights,
+      //   nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      // },
+      where: { industry: user.industry }, // Where clause to check for uniqueness
+      update: {}, // Do nothing if the record already exists
+      create: {
         industry: user.industry,
-        ...insights,
-        nextUpdate,
-        nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        ...insights, // Include the AI insights
+        nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Set next update time
       },
     });
+
     return industryInsight;
   }
+
   return user.industryInsight;
 }

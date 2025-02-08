@@ -8,6 +8,11 @@ export async function updateUser(data) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  // validate input
+  if(!data.industry){
+    throw new Error("Industry is required to update the profile.");
+  }
+
   const user = await db.user.findUnique({
     where: {
       clerkUserId: userId,
@@ -25,14 +30,14 @@ export async function updateUser(data) {
             industry: data.industry,
           },
         });
+        console.log("printing industryInsights in user", industryInsight);
         // If industry doesn't exist, create it with default values - will replace it with ai later
         if (!industryInsight) {
-          const insights = generateAIInsights(user.industry);
-          industryInsight = await db.industryInsight.create({
+          const insights = await generateAIInsights(data.industry);
+          industryInsight = await tx.industryInsight.upsert({
             data: {
-              industry: user.industry,
+              industry: data.industry,
               ...insights,
-              nextUpdate,
               nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             },
           });
@@ -40,7 +45,7 @@ export async function updateUser(data) {
         // Update the user
         const updateUser = await tx.user.update({
           where: {
-            clerkUserId: userId,
+            id: user.id,
           },
           data: {
             industry: data.industry,

@@ -13,13 +13,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum DemandLevel{
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum MarketOutlook{
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
 model User {
-  id               String            @id @default(uuid())
-  clerkUserId      String            @unique // clerk user id
-  email            String            @unique
-  name             String?
-  imageUrl         String?
-  industry         String? // Combined industry-subindustry (e.g., "tech-software-development")
+  id              String           @id @default(uuid())
+  clerkUserId     String           @unique // clerk user id
+  email           String           @unique
+  name            String?
+  imageUrl        String?
+  industry        String? // Combined industry-subindustry (e.g., "tech-software-development")
   IndustryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
 
   // profile fields
@@ -100,14 +113,3 @@ model IndustryInsight {
   @@index([industry])
 }
 
-enum DemandLevel {
-  HIGH
-  MEDIUM
-  LOW
-}
-
-enum MarketOutlook {
-  POSITIVE
-  NEUTRAL
-  NEGATIVE
-}
