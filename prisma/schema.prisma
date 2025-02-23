@@ -49,7 +49,7 @@ model Assessment {
   id             String   @id @default(cuid())
   userId         String
   user           User     @relation(fields: [userId], references: [id])
-  quizScroe      Float //Overall quiz score
+  quizScore      Float //Overall quiz score
   questions      Json[] //Array of {question, answer, userAnswer, isCorrected}
   category       String //"Technical", "Behavioral", etc
   improvementTip String? //AI-generated improvement tip
