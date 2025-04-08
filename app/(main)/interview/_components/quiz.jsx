@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
+import QuizResult from "./quiz_result";
 import { toast } from "sonner";
 
 const Quiz = () => {
@@ -61,26 +62,42 @@ const Quiz = () => {
   const cslculateScore = () => {
     let correct = 0;
     answers.forEach((answer, index) => {
-      if(answer === quizData[index].correctAnswer){
+      if (answer === quizData[index].correctAnswer) {
         correct++;
       }
     });
     return (correct / quizData.length) * 100;
-  }
+  };
 
   const finishQuiz = async () => {
-    const score = 0;
+    const score = cslculateScore();
     try {
       await saveQuizResultFn(quizData, answers, score);
       toast.success("Quiz Completed");
     } catch (error) {
       toast.error(error.message || "Failed to save quiz result");
     }
+  };
+
+  const startNewQuiz = () => {
+    setCurrentQuestion(0);
+    setAnswers([]);
+    setShowExplanation(false);
+    generateQuizFn();
+    setResultData(null);
   }
-  
 
   if (generatingQuiz) {
     return <BarLoader className="mt-4" width={"100%"} color="gray" />;
+  }
+
+  // Show results if quiz is completed
+  if (resultData) {
+    return (
+      <div className="mx-2">
+        <QuizResult result={resultData} onStartNew={startNewQuiz} />
+      </div>
+    );
   }
 
   if (!quizData) {
@@ -162,5 +179,3 @@ const Quiz = () => {
 };
 
 export default Quiz;
-
-

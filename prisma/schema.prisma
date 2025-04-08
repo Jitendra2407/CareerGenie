@@ -13,14 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-enum DemandLevel{
+enum DemandLevel {
   HIGH
   MEDIUM
   LOW
 }
 
-enum MarketOutlook{
+enum MarketOutlook {
   POSITIVE
   NEGATIVE
   NEUTRAL
@@ -42,7 +41,7 @@ model User {
 
   assessment  Assessment[]
   resume      Resume?
-  coverLetter coverLetter[]
+  coverLetter CoverLetter[]
 }
 
 model Assessment {
@@ -50,7 +49,7 @@ model Assessment {
   userId         String
   user           User     @relation(fields: [userId], references: [id])
   quizScore      Float //Overall quiz score
-  questions      Json[] //Array of {question, answer, userAnswer, isCorrected}
+  questions      Json //Array of {question, answer, userAnswer, isCorrected}
   category       String //"Technical", "Behavioral", etc
   improvementTip String? //AI-generated improvement tip
   createdAt      DateTime @default(now())
@@ -70,7 +69,7 @@ model Resume {
   updatedAt DateTime @updatedAt
 }
 
-model coverLetter {
+model CoverLetter {
   id             String   @id @default(cuid())
   userId         String
   user           User     @relation(fields: [userId], references: [id])
@@ -78,6 +77,7 @@ model coverLetter {
   jobDescription String?
   companyName    String // Name of the company applying to
   jobTitle       String // Position applying for
+  status         String   @default("draft") // draft, completed
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -112,4 +112,3 @@ model IndustryInsight {
 
   @@index([industry])
 }
-

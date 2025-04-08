@@ -57,15 +57,125 @@ export async function generateQuiz() {
   }
 }
 
+// export async function saveQuizResult( questions, answers, score ) {
+//   console.log("on server side, questions", questions);
+//   console.log("on server side, answers", answers);
+//   console.log("on server side, score", score);
+//   const { userId } = await auth();
+//   if (!userId) throw new Error("Unauthorized");
+
+//   const user = await db.user.findUnique({
+//     where: { clerkUserId: userId },
+//     include: {
+//       IndustryInsight: true,
+//     },
+//   });
+
+//   if (!user) throw new Error("User not found");
+
+//   const questionResults = questions.map((q, index) => ({
+//     question: q.question,
+//     answer: q.correctAnswer,
+//     userAnswer: answers[index],
+//     isCorrect: q.correctAnswer === answers[index],
+//     explanation: q.explanation,
+//   }));
+
+//   const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
+//   let improvementTip = null;
+
+//   // if (wrongAnswers.length > 0) {
+//   //   const wrongQuestionsText = wrongAnswers
+//   //     .map(
+//   //       (q) =>
+//   //         `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
+//   //     )
+//   //     .join("\n\n");
+
+//   //   const improvementPrompt = `
+//   //     The user got the following ${user.industry} technical interview questions wrong:
+
+//   //     ${wrongQuestionsText}
+
+//   //     Based on these mistakes, provide a concise, specific improvement tip.
+//   //     Focus on the knowledge gaps revealed by these wrong answers.
+//   //     Keep the response under 2 sentences and make it encouraging.
+//   //     Don't explicitly mention the mistakes, instead focus on what to learn/practice.
+//   //   `;
+
+//   //   try {
+//   //     const result = await model.generateContent(improvementPrompt);
+//   //     const response = result.response;
+//   //     improvementTip = response.text().trim();
+//   //   } catch (error) {
+//   //     console.error("Error generating improvement tip:", error);
+//   //   }
+//   // }
+
+//   if (!user.industry || !wrongAnswers.length) {
+//     improvementTip = null;
+//   } else {
+//     const wrongQuestionsText = wrongAnswers
+//       .map(
+//         (q) =>
+//           `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
+//       )
+//       .join("\n\n");
+
+//     const improvementPrompt = `
+//     The user got the following ${user.industry} technical interview questions wrong:
+
+//     ${wrongQuestionsText}
+
+//     Based on these mistakes, provide a concise, specific improvement tip.
+//     Focus on the knowledge gaps revealed by these wrong answers.
+//     Keep the response under 2 sentences and make it encouraging.
+//     Don't explicitly mention the mistakes, instead focus on what to learn/practice.
+//   `;
+
+//     try {
+//       const result = await model.generateContent(improvementPrompt);
+//       const response = result.response;
+//       improvementTip = response.text().trim();
+//     } catch (error) {
+//       console.error("Error generating improvement tip:", error);
+//     }
+//   }
+
+//   try {
+//     console.log("printing questionsResults", questionResults);
+//     // console.log("printing category", category);
+//     console.log("printing improvementTip", improvementTip);
+
+//     // additional code by gpt
+//     const sanitizedQuestions = JSON.parse(JSON.stringify(questionResults));
+//     console.log("printing sanitizedQuestions", sanitizedQuestions);
+
+//     console.log("printing userId in interview", user.id);
+//     const assessment = await db.assessment.create({
+//       data: {
+//         userId: user.id,
+//         quizScore: score,
+//         // questions: questionResults,
+//         questions: sanitizedQuestions,
+//         category: "Technical",
+//         improvementTip,
+//       },
+//     });
+
+//     return assessment;
+//   } catch (error) {
+//     console.error("Error saving quiz result:", error);
+//     throw new Error("Failed to save quiz result");
+//   }
+// }
+
 export async function saveQuizResult(questions, answers, score) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
-    include: {
-      IndustryInsight: true,
-    },
   });
 
   if (!user) throw new Error("User not found");
@@ -78,9 +188,11 @@ export async function saveQuizResult(questions, answers, score) {
     explanation: q.explanation,
   }));
 
+  // Get wrong answers
   const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
-  let improvementTip = null;
 
+  // Only generate improvement tips if there are wrong answers
+  let improvementTip = null;
   if (wrongAnswers.length > 0) {
     const wrongQuestionsText = wrongAnswers
       .map(
@@ -101,9 +213,9 @@ export async function saveQuizResult(questions, answers, score) {
     `;
 
     try {
-      const result = await model.generateContent(improvementPrompt);
-      const response = result.response;
-      improvementTip = response.text().trim();
+      const tipResult = await model.generateContent(improvementPrompt);
+
+      improvementTip = tipResult.response.text().trim();
     } catch (error) {
       console.error("Error generating improvement tip:", error);
     }
@@ -119,10 +231,36 @@ export async function saveQuizResult(questions, answers, score) {
         improvementTip,
       },
     });
-    
+
     return assessment;
   } catch (error) {
-    console.error("Error saving quiz result:", error);
-    throw new Error("Failed to save quiz result");
+    console.log("Error:", error.stack); // Only console.log works here, anything else was throwing errors for me.
+  }
+}
+
+export async function getAssessments() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  try {
+    const assessments = await db.assessment.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    return assessments;
+  } catch (error) {
+    console.log("Error:", error.stack);
+    throw new Error("Failed to fetch assessments");
   }
 }
