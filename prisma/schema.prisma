@@ -33,6 +33,7 @@ model User {
   imageUrl        String?
   industry        String? // Combined industry-subindustry (e.g., "tech-software-development")
   IndustryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
+  // industryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
 
   // profile fields
   bio        String?

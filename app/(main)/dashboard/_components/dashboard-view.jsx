@@ -29,7 +29,7 @@ import {
 } from "recharts";
 
 const DashboardView = ({ insights }) => {
-  const salaryData = insights.salaryRanges.map((range) => ({
+  const salaryData = insights?.salaryRanges.map((range) => ({
     name: range.role,
     min: range.min / 1000,
     max: range.max / 1000,
@@ -37,7 +37,7 @@ const DashboardView = ({ insights }) => {
   }));
 
   const getDemandLevelColor = (level) => {
-    switch (level.toLowerCase()) {
+    switch (level?.toLowerCase()) {
       case "high":
         return "bg-green-500";
       case "medium":
@@ -48,7 +48,7 @@ const DashboardView = ({ insights }) => {
   };
 
   const getMarketOutLookInfo = (outlook) => {
-    switch (outlook.toLowerCase()) {
+    switch (outlook?.toLowerCase()) {
       case "positive":
         return { icon: TrendingUp, color: "text-green-500" };
       case "neutral":
@@ -60,14 +60,23 @@ const DashboardView = ({ insights }) => {
     }
   };
 
-  const OutlookIcon = getMarketOutLookInfo(insights.marketOutlook).icon;
-  const outlookColor = getMarketOutLookInfo(insights.marketOutlook).color;
+  const OutlookIcon = getMarketOutLookInfo(insights?.marketOutlook).icon;
+  const outlookColor = getMarketOutLookInfo(insights?.marketOutlook).color;
 
-  const lastUpdateDate = format(new Date(insights.lastUpdated), "dd/MM/yyyy");
-  const nextUpdateDistance = formatDistanceToNow(
-    new Date(insights.nextUpdate),
-    { addSuffix: true }
-  );
+  // const lastUpdateDate = format(new Date(insights?.lastUpdated), "dd/MM/yyyy");
+  // const nextUpdateDistance = formatDistanceToNow(
+  //   new Date(insights?.nextUpdate),
+  //   { addSuffix: true }
+  // );
+
+  const lastUpdateDate = insights?.lastUpdated
+    ? format(new Date(insights.lastUpdated), "dd/MM/yyyy")
+    : "N/A";
+
+  const nextUpdateDistance = insights?.nextUpdate
+    ? formatDistanceToNow(new Date(insights.nextUpdate), { addSuffix: true })
+    : "unknown";
+
 
   return (
     <div className="space-y-6">
@@ -83,7 +92,7 @@ const DashboardView = ({ insights }) => {
             <OutlookIcon className={`h-4 w-4 ${outlookColor}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{insights.marketOutlook}</div>
+            <div className="text-2xl font-bold">{insights?.marketOutlook}</div>
             <p className="text-xs text-muted-foreground">
               Next update {nextUpdateDistance}
             </p>
@@ -99,9 +108,9 @@ const DashboardView = ({ insights }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {insights.growthRate.toFixed(1)}%
+              {insights?.growthRate.toFixed(1)}%
             </div>
-            <Progress value={insights.growthRate} className="mt-2" />
+            <Progress value={insights?.growthRate} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -111,10 +120,10 @@ const DashboardView = ({ insights }) => {
             <BriefcaseIcon className={`h-4 w-4 text-muted-foreground`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{insights.demandLevel}</div>
+            <div className="text-2xl font-bold">{insights?.demandLevel}</div>
             <div
               className={`h-2 w-full rounded-full mt-2 ${getDemandLevelColor(
-                insights.demandLevel
+                insights?.demandLevel
               )}`}
             ></div>
           </CardContent>
@@ -127,7 +136,7 @@ const DashboardView = ({ insights }) => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1">
-              {insights.topSkills.map((skill) => (
+              {insights?.topSkills.map((skill) => (
                 <Badge key={skill} variant="secondary">
                   {skill}
                 </Badge>
@@ -186,7 +195,7 @@ const DashboardView = ({ insights }) => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {insights.keyTrends.map((trend, index) => (
+              {insights?.keyTrends.map((trend, index) => (
                 <li key={index} className="flex items-center space-x-2">
                   <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
                   <span>{trend}</span>
@@ -205,7 +214,7 @@ const DashboardView = ({ insights }) => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {insights.recommendedSkills.map((skill) => (
+              {insights?.recommendedSkills.map((skill) => (
                 <Badge key={skill} variant="outline">
                   {skill}
                 </Badge>

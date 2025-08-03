@@ -33,12 +33,27 @@ export async function updateUser(data) {
         console.log("printing industryInsights in user", industryInsight);
         // If industry doesn't exist, create it with default values - will replace it with ai later
         if (!industryInsight) {
+          console.log("printing data.industry", data.industry);
           const insights = await generateAIInsights(data.industry);
+          // industryInsight = await tx.industryInsight.upsert({
+          //   data: {
+          //     industry: data.industry,
+          //     ...insights,
+          //     nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          //   },
+          // });
           industryInsight = await tx.industryInsight.upsert({
-            data: {
+            where: {
+              industry: data.industry,
+            },
+            create: {
               industry: data.industry,
               ...insights,
               nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            },
+            update: {
+              // you can update any field you want or leave it empty
+              nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // optional update example
             },
           });
         }
@@ -63,7 +78,7 @@ export async function updateUser(data) {
     );
     return { success: true, ...result };
   } catch (error) {
-    console.error("Error updating user and industry:", error.message);
+    console.log("Error updating user and industry:", error.message);
     throw new Error("Failed to update profile" + error.message);
   }
 }
@@ -92,7 +107,7 @@ export async function getUserOnboardingStatus() {
       isOnboarded: !!user?.industry,
     };
   } catch (error) {
-    console.error("Error checking onboarding status:", error.message);
+    console.log("Error checking onboarding status:", error.message);
     throw new Error("Failed to check onboarding status");
   }
 }

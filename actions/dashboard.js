@@ -42,34 +42,64 @@ export async function getIndustryInsights() {
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
-    include: {
-      IndustryInsight: true,
+    // include: {
+    //   IndustryInsight: true,
+    // },
+    select: {
+      industry: true,
+      IndustryInsight: true, // This works like `include` in this case
     },
   });
 
   if (!user) throw new Error("User not found");
 
-  // If no insights exist, generate them
-  if (!user.industryInsight) {
-    const insights = await generateAIInsights(user.industry);
+  if (!user.industry) {
+    console.error("User industry is null. Skipping insight generation.");
+    return;
+  }
 
+
+  // If no insights exist, generate them
+  // if (!user.industryInsight) {
+  //   const insights = await generateAIInsights(user.industry);
+
+  //   const industryInsight = await db.industryInsight.upsert({
+  //     // data: {
+  //     //   industry: user.industry,
+  //     //   ...insights,
+  //     //   nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  //     // },
+  //     where: { industry: user.industry }, // Where clause to check for uniqueness
+  //     update: {}, // Do nothing if the record already exists
+  //     create: {
+  //       industry: user.industry,
+  //       ...insights, // Include the AI insights
+  //       nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Set next update time
+  //     },
+  //   });
+
+  //   return industryInsight;
+  // }
+
+  if (!user.IndustryInsight && user.industry) {
+    const insights = await generateAIInsights(user.industry);
     const industryInsight = await db.industryInsight.upsert({
-      // data: {
-      //   industry: user.industry,
-      //   ...insights,
-      //   nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      // },
-      where: { industry: user.industry }, // Where clause to check for uniqueness
-      update: {}, // Do nothing if the record already exists
+      where: { industry: user.industry },
+      update: {},
       create: {
         industry: user.industry,
-        ...insights, // Include the AI insights
-        nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Set next update time
+        salaryRanges: insights.salaryRanges,
+        growthRate: insights.growthRate,
+        demandLevel: insights.demandLevel,
+        topSkills: insights.topSkills,
+        marketOutlook: insights.marketOutlook,
+        keyTrends: insights.keyTrends,
+        recommendedSkills: insights.recommendedSkills,
+        nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // example: 1 week later
       },
     });
-
     return industryInsight;
   }
 
-  return user.industryInsight;
+  return user.IndustryInsight;
 }
