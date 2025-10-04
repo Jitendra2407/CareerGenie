@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 export async function generateQuiz() {
   const { userId } = await auth();
@@ -57,118 +57,6 @@ export async function generateQuiz() {
   }
 }
 
-// export async function saveQuizResult( questions, answers, score ) {
-//   console.log("on server side, questions", questions);
-//   console.log("on server side, answers", answers);
-//   console.log("on server side, score", score);
-//   const { userId } = await auth();
-//   if (!userId) throw new Error("Unauthorized");
-
-//   const user = await db.user.findUnique({
-//     where: { clerkUserId: userId },
-//     include: {
-//       IndustryInsight: true,
-//     },
-//   });
-
-//   if (!user) throw new Error("User not found");
-
-//   const questionResults = questions.map((q, index) => ({
-//     question: q.question,
-//     answer: q.correctAnswer,
-//     userAnswer: answers[index],
-//     isCorrect: q.correctAnswer === answers[index],
-//     explanation: q.explanation,
-//   }));
-
-//   const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
-//   let improvementTip = null;
-
-//   // if (wrongAnswers.length > 0) {
-//   //   const wrongQuestionsText = wrongAnswers
-//   //     .map(
-//   //       (q) =>
-//   //         `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
-//   //     )
-//   //     .join("\n\n");
-
-//   //   const improvementPrompt = `
-//   //     The user got the following ${user.industry} technical interview questions wrong:
-
-//   //     ${wrongQuestionsText}
-
-//   //     Based on these mistakes, provide a concise, specific improvement tip.
-//   //     Focus on the knowledge gaps revealed by these wrong answers.
-//   //     Keep the response under 2 sentences and make it encouraging.
-//   //     Don't explicitly mention the mistakes, instead focus on what to learn/practice.
-//   //   `;
-
-//   //   try {
-//   //     const result = await model.generateContent(improvementPrompt);
-//   //     const response = result.response;
-//   //     improvementTip = response.text().trim();
-//   //   } catch (error) {
-//   //     console.error("Error generating improvement tip:", error);
-//   //   }
-//   // }
-
-//   if (!user.industry || !wrongAnswers.length) {
-//     improvementTip = null;
-//   } else {
-//     const wrongQuestionsText = wrongAnswers
-//       .map(
-//         (q) =>
-//           `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
-//       )
-//       .join("\n\n");
-
-//     const improvementPrompt = `
-//     The user got the following ${user.industry} technical interview questions wrong:
-
-//     ${wrongQuestionsText}
-
-//     Based on these mistakes, provide a concise, specific improvement tip.
-//     Focus on the knowledge gaps revealed by these wrong answers.
-//     Keep the response under 2 sentences and make it encouraging.
-//     Don't explicitly mention the mistakes, instead focus on what to learn/practice.
-//   `;
-
-//     try {
-//       const result = await model.generateContent(improvementPrompt);
-//       const response = result.response;
-//       improvementTip = response.text().trim();
-//     } catch (error) {
-//       console.error("Error generating improvement tip:", error);
-//     }
-//   }
-
-//   try {
-//     console.log("printing questionsResults", questionResults);
-//     // console.log("printing category", category);
-//     console.log("printing improvementTip", improvementTip);
-
-//     // additional code by gpt
-//     const sanitizedQuestions = JSON.parse(JSON.stringify(questionResults));
-//     console.log("printing sanitizedQuestions", sanitizedQuestions);
-
-//     console.log("printing userId in interview", user.id);
-//     const assessment = await db.assessment.create({
-//       data: {
-//         userId: user.id,
-//         quizScore: score,
-//         // questions: questionResults,
-//         questions: sanitizedQuestions,
-//         category: "Technical",
-//         improvementTip,
-//       },
-//     });
-
-//     return assessment;
-//   } catch (error) {
-//     console.error("Error saving quiz result:", error);
-//     throw new Error("Failed to save quiz result");
-//   }
-// }
 
 export async function saveQuizResult(questions, answers, score) {
   const { userId } = await auth();
