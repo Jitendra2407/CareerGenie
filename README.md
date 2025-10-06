@@ -1,124 +1,268 @@
-````markdown
-# CareerGenie
+# AI Career Companion
 
-![CareerGenie Logo](jitendra2407/careergenie/CareerGenie-f10226a90807f2d4e55e1d7ade5ad4e4fb5d2f99/public/logo.png)
-
-## Overview
-
-CareerGenie is an intelligent career development platform designed to empower professionals in their career journey. Leveraging the power of AI, it provides personalized guidance, industry-specific insights, and powerful tools for creating job application materials and preparing for interviews. Whether you're a recent graduate or a seasoned professional, CareerGenie is your AI-powered coach for achieving professional success.
+An intelligent career development platform that leverages AI to help professionals advance their careers through personalized insights, resume building, interview preparation, and cover letter generation.
 
 ## Features
 
--   **AI-Powered Career Guidance**: Get personalized career advice and insights powered by advanced AI technology.
--   **Interview Preparation**: Practice with role-specific questions and get instant feedback to improve your performance.
--   **Industry Insights**: Stay ahead with real-time industry trends, salary data, and market analysis.
--   **Smart Resume Creation**: Generate ATS-optimized resumes with AI assistance, with an intuitive markdown editor and PDF download option.
--   **AI Cover Letter Generation**: Instantly create compelling and tailored cover letters for any job application.
--   **Onboarding**: A personalized onboarding experience to tailor the app to your specific industry and career goals.
--   **Performance Tracking**: Track your interview quiz performance over time with charts and detailed analytics.
+### 🎯 Industry Insights Dashboard
+- Real-time industry analysis powered by Google Gemini AI
+- Salary range comparisons across different roles
+- Market outlook and growth rate tracking
+- Top skills and trending technologies in your industry
+- Personalized skill recommendations
+
+### 📝 AI-Powered Resume Builder
+- Interactive form-based resume creation
+- Live markdown preview and editing
+- AI-powered content improvement suggestions
+- Professional formatting with sections for:
+  - Contact information
+  - Professional summary
+  - Skills
+  - Work experience
+  - Education
+  - Projects
+- Export to PDF functionality
+
+### 💼 Cover Letter Generator
+- AI-generated tailored cover letters
+- Customized based on:
+  - Job description
+  - Company information
+  - Your professional background
+  - Industry-specific keywords
+- Save and manage multiple cover letters
+- Markdown preview and editing
+
+### 🎓 Interview Preparation
+- Industry-specific technical interview questions
+- Interactive quiz format with multiple-choice questions
+- Performance tracking over time
+- Detailed explanations for each answer
+- AI-generated improvement tips based on wrong answers
+- Historical performance charts
+- Progress statistics
 
 ## Tech Stack
 
--   **Framework**: [Next.js](https://nextjs.org/)
--   **Authentication**: [Clerk](https://clerk.com/)
--   **Database**: PostgreSQL
--   **ORM**: [Prisma](https://www.prisma.io/)
--   **Styling**: [Tailwind CSS](https://tailwindcss.com/) with [shadcn/ui](https://ui.shadcn.com/)
--   **AI**: [Google Generative AI (Gemini)](https://ai.google.dev/)
--   **Deployment**: Vercel
--   **Background Jobs**: [Inngest](https://www.inngest.com/)
+### Frontend
+- **Next.js 14+** - React framework with App Router
+- **React Hook Form** - Form state management
+- **Zod** - Schema validation
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI component library
+- **Recharts** - Data visualization
+- **MDEditor** - Markdown editing and preview
+- **html2pdf.js** - PDF generation
+- **date-fns** - Date formatting
 
-## Getting Started
+### Backend
+- **Next.js Server Actions** - API endpoints
+- **Prisma** - ORM for database management
+- **PostgreSQL** - Database (recommended)
 
-### Prerequisites
+### Authentication
+- **Clerk** - User authentication and management
 
--   Node.js (v18.18.0 or later)
--   npm, yarn, pnpm, or bun
--   PostgreSQL database
+### AI Integration
+- **Google Gemini AI** - AI model for content generation
+  - Model: `gemini-2.5-flash`
 
-### Installation
+## Prerequisites
 
-1.  **Clone the repository:**
+- Node.js 18+ installed
+- PostgreSQL database (or other Prisma-supported database)
+- Clerk account for authentication
+- Google AI API key (Gemini)
 
-    ```bash
-    git clone [https://github.com/jitendra2407/careergenie.git](https://github.com/jitendra2407/careergenie.git)
-    cd careergenie
-    ```
+## Installation
 
-2.  **Install dependencies:**
+1. **Clone the repository**
+```bash
+git clone <your-repo-url>
+cd ai-career-companion
+```
 
-    ```bash
-    npm install
-    # or
-    yarn install
-    # or
-    pnpm install
-    # or
-    bun install
-    ```
+2. **Install dependencies**
+```bash
+npm install
+```
 
-3.  **Set up environment variables:**
+3. **Set up environment variables**
 
-    Create a `.env` file in the root of your project and add the necessary environment variables. See the [Environment Variables](#environment-variables) section below for more details.
+Create a `.env` file in the root directory:
 
-4.  **Set up the database:**
-
-    Run the following command to apply the database migrations:
-
-    ```bash
-    npx prisma migrate dev
-    ```
-
-5.  **Run the development server:**
-
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    # or
-    pnpm dev
-    # or
-    bun dev
-    ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your `.env` file:
-
-````
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/career_companion"
 
 # Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 
-NEXT\_PUBLIC\_CLERK\_PUBLISHABLE\_KEY=
-CLERK\_SECRET\_KEY=
-NEXT\_PUBLIC\_CLERK\_SIGN\_IN\_URL=/sign-in
-NEXT\_PUBLIC\_CLERK\_SIGN\_UP\_URL=/sign-up
-NEXT\_PUBLIC\_CLERK\_AFTER\_SIGN\_IN\_URL=/dashboard
-NEXT\_PUBLIC\_CLERK\_AFTER\_SIGN\_UP\_URL=/onboarding
+# Clerk URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
 
-# Database
+# Google AI
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-DATABASE\_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+4. **Set up the database**
 
-# Google Generative AI
+```bash
+# Generate Prisma Client
+npx prisma generate
 
-GEMINI\_API\_KEY=
+# Run migrations
+npx prisma migrate dev
 
-# Inngest
+# (Optional) Seed the database
+npx prisma db seed
+```
 
-INNGEST\_EVENT\_KEY=
+5. **Run the development server**
+
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to see the application.
+
+## Project Structure
 
 ```
+├── actions/                    # Server actions
+│   ├── cover-letter.js        # Cover letter generation logic
+│   ├── dashboard.js           # Industry insights generation
+│   ├── interview.js           # Quiz generation and results
+│   ├── resume.js              # Resume management
+│   └── user.js                # User profile management
+├── app/
+│   ├── (main)/                # Main application routes
+│   │   ├── ai-cover-letter/  # Cover letter pages
+│   │   ├── dashboard/        # Industry insights dashboard
+│   │   ├── interview/        # Interview preparation
+│   │   └── resume/           # Resume builder
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utility functions and schemas
+│   └── page.jsx              # Landing page
+├── components/               # Reusable components
+│   ├── ui/                  # shadcn/ui components
+│   └── hero.jsx             # Hero section
+├── data/                    # Static data (FAQs, features, etc.)
+├── lib/
+│   └── prisma.js           # Prisma client instance
+└── prisma/
+    └── schema.prisma       # Database schema
+```
+
+## Database Schema
+
+Key models:
+- **User** - User profile with industry, skills, experience
+- **IndustryInsight** - AI-generated industry analysis
+- **Resume** - User's resume content
+- **CoverLetter** - Generated cover letters
+- **Assessment** - Quiz results and performance tracking
+
+## Key Features Implementation
+
+### AI Content Generation
+
+All AI features use Google Gemini AI with structured prompts:
+- Industry insights with JSON-formatted responses
+- Resume content improvements
+- Cover letter generation based on job descriptions
+- Technical interview questions with explanations
+
+### Real-time Updates
+
+- Uses Next.js Server Actions for server-side operations
+- Automatic revalidation with `revalidatePath`
+- Optimistic UI updates for better UX
+
+### Data Persistence
+
+- All user data stored in PostgreSQL via Prisma
+- Automatic syncing with Clerk authentication
+- Industry insights cached and updated weekly
 
 ## Deployment
 
-The easiest way to deploy this Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+### Vercel (Recommended)
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+### Other Platforms
+
+Ensure your platform supports:
+- Next.js 14+ with App Router
+- PostgreSQL database
+- Environment variables
+- Node.js 18+
+
+## Environment Variables Reference
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key | Yes |
+| `CLERK_SECRET_KEY` | Clerk secret key | Yes |
+| `GEMINI_API_KEY` | Google AI API key | Yes |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | Sign in page URL | Yes |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Sign up page URL | Yes |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | Redirect after sign in | Yes |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | Redirect after sign up | Yes |
+
+## Usage
+
+1. **Onboarding**: Complete your profile with industry, experience, and skills
+2. **Dashboard**: View AI-generated insights about your industry
+3. **Resume Builder**: Create and optimize your resume with AI assistance
+4. **Cover Letters**: Generate tailored cover letters for job applications
+5. **Interview Prep**: Practice with industry-specific technical questions
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Google Gemini AI for powering the AI features
+- Clerk for authentication
+- shadcn/ui for the beautiful component library
+- The Next.js team for an amazing framework
+
+## Support
+
+For support, email support@example.com or open an issue in the repository.
+
+## Roadmap
+
+- [ ] Job search integration
+- [ ] LinkedIn profile optimization
+- [ ] Mock video interviews
+- [ ] Salary negotiation guidance
+- [ ] Career path recommendations
+- [ ] Networking suggestions
+- [ ] Portfolio builder
+
+---
+
+Built with ❤️ using Next.js and AI
