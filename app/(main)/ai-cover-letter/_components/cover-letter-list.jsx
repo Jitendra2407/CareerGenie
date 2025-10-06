@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { Edit2, Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Card,
@@ -40,11 +40,14 @@ export default function CoverLetterList({ coverLetters }) {
 
   if (!coverLetters?.length) {
     return (
-      <Card>
+      <Card className="text-center py-12">
         <CardHeader>
-          <CardTitle>No Cover Letters Yet</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            No Cover Letters Yet
+          </CardTitle>
           <CardDescription>
-            Create your first cover letter to get started
+            Click the button above to create your first AI-generated cover
+            letter.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -54,38 +57,43 @@ export default function CoverLetterList({ coverLetters }) {
   return (
     <div className="space-y-4">
       {coverLetters.map((letter) => (
-        <Card key={letter.id} className="group relative ">
+        <Card
+          key={letter.id}
+          className="group relative transition-all hover:border-primary"
+        >
           <CardHeader>
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-xl gradient-title">
+                <CardTitle className="text-xl font-bold">
                   {letter.jobTitle} at {letter.companyName}
                 </CardTitle>
                 <CardDescription>
-                  Created {format(new Date(letter.createdAt), "PPP")}
+                  Created on {format(new Date(letter.createdAt), "PPP")}
                 </CardDescription>
               </div>
               <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => router.push(`/ai-cover-letter/${letter.id}`)}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
                 <AlertDialog>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => router.push(`/ai-cover-letter/${letter.id}`)}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button variant="destructive" size="icon">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Cover Letter?</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action cannot be undone. This will permanently
-                        delete your cover letter for {letter.jobTitle} at{" "}
-                        {letter.companyName}.
+                        delete your cover letter for the {letter.jobTitle}{" "}
+                        position at {letter.companyName}.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -94,7 +102,7 @@ export default function CoverLetterList({ coverLetters }) {
                         onClick={() => handleDelete(letter.id)}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        Delete
+                        Yes, delete it
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -103,9 +111,9 @@ export default function CoverLetterList({ coverLetters }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm line-clamp-3">
+            <p className="text-muted-foreground text-sm line-clamp-3">
               {letter.jobDescription}
-            </div>
+            </p>
           </CardContent>
         </Card>
       ))}

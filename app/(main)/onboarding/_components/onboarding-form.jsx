@@ -28,8 +28,6 @@ import { updateUser } from "@/actions/user";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-useForm;
-
 const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const router = useRouter();
@@ -52,7 +50,6 @@ const OnboardingForm = ({ industries }) => {
 
   const onSubmit = async (values) => {
     try {
-      console.log(values);
       const formattedIndustry = `${values.industry}-${values.subIndustry
         .toLowerCase()
         .replace(/ /g, "-")}`;
@@ -72,86 +69,81 @@ const OnboardingForm = ({ industries }) => {
       router.push("/dashboard");
       router.refresh();
     }
-  }, [updateResult, updateLoading]);
+  }, [updateResult, updateLoading, router]);
 
   const watchIndustry = watch("industry");
 
   return (
-    <div className="flex items-center justify-center bg-background">
-      <Card className="w-full max-w-lg mt-10 mx-2">
-        <CardHeader>
-          <CardTitle className="gradient-title text-4xl">
-            Complete Your Profile
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <Card className="w-full max-w-2xl mx-2 shadow-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="gradient-title text-4xl mb-2">
+            Welcome to CareerGenie
           </CardTitle>
-          <CardDescription>
-            Select your industry to get personalized career insights and
-            recommendations
+          <CardDescription className="text-lg">
+            Tell us a bit about yourself to get personalized career insights.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-2">
-              <Label htmlFor="industry">Industry</Label>
-              <Select
-                onValueChange={(value) => {
-                  setValue("industry", value);
-                  setSelectedIndustry(
-                    industries.find((ind) => ind.id === value)
-                  );
-                  setValue("subIndustry", "");
-                }}
-              >
-                <SelectTrigger id="industry">
-                  <SelectValue placeholder="Select an Industry" />
-                </SelectTrigger>
-                <SelectContent>
-                  {industries.map((ind) => {
-                    return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Select
+                  onValueChange={(value) => {
+                    setValue("industry", value);
+                    setSelectedIndustry(
+                      industries.find((ind) => ind.id === value)
+                    );
+                    setValue("subIndustry", "");
+                  }}
+                >
+                  <SelectTrigger id="industry">
+                    <SelectValue placeholder="Select your Industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {industries.map((ind) => (
                       <SelectItem value={ind.id} key={ind.id}>
                         {ind.name}
                       </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-              {errors.industry && (
-                <p className="text-sm text-red-500">
-                  {errors.industry.message}
-                </p>
-              )}
-            </div>
-
-            {/* for subindustry */}
-            {watchIndustry && (
-              <div className="space-y-2">
-                <Label htmlFor="subIndustry">Specialization</Label>
-                <Select
-                  onValueChange={(value) => {
-                    setValue("subIndustry", value);
-                  }}
-                >
-                  <SelectTrigger id="subIndustry">
-                    <SelectValue placeholder="Select an Industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {selectedIndustry?.subIndustries.map((ind) => {
-                      return (
-                        <SelectItem value={ind} key={ind}>
-                          {ind}
-                        </SelectItem>
-                      );
-                    })}
+                    ))}
                   </SelectContent>
                 </Select>
-                {errors.subIndustry && (
+                {errors.industry && (
                   <p className="text-sm text-red-500">
-                    {errors.subIndustry.message}
+                    {errors.industry.message}
                   </p>
                 )}
               </div>
-            )}
 
-            {/* for experiences */}
+              {watchIndustry && (
+                <div className="space-y-2">
+                  <Label htmlFor="subIndustry">Specialization</Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setValue("subIndustry", value);
+                    }}
+                  >
+                    <SelectTrigger id="subIndustry">
+                      <SelectValue placeholder="Select your Specialization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedIndustry?.subIndustries.map((ind) => (
+                        <SelectItem value={ind} key={ind}>
+                          {ind}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.subIndustry && (
+                    <p className="text-sm text-red-500">
+                      {errors.subIndustry.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="experience">Years of Experience</Label>
               <Input
@@ -159,7 +151,7 @@ const OnboardingForm = ({ industries }) => {
                 type="number"
                 min="0"
                 max="50"
-                placeholder="Enter years of experience"
+                placeholder="e.g., 5"
                 {...register("experience")}
               />
               {errors.experience && (
@@ -169,28 +161,26 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
-            {/* for skills */}
             <div className="space-y-2">
-              <Label htmlFor="skills">Skills</Label>
+              <Label htmlFor="skills">Key Skills</Label>
               <Input
                 id="skills"
                 placeholder="e.g., Python, JavaScript, Project Management"
                 {...register("skills")}
               />
               <p className="text-sm text-muted-foreground">
-                Separate multiple skills with commas
+                Separate skills with a comma.
               </p>
               {errors.skills && (
                 <p className="text-sm text-red-500">{errors.skills.message}</p>
               )}
             </div>
 
-            {/* for professional bio */}
             <div className="space-y-2">
               <Label htmlFor="bio">Professional Bio</Label>
               <Textarea
                 id="bio"
-                placeholder="Tell us about your professional background"
+                placeholder="A brief summary of your professional background and career goals."
                 className="h-32"
                 {...register("bio")}
               />
@@ -199,11 +189,16 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={updateLoading}>
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={updateLoading}
+            >
               {updateLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  Saving Profile...
                 </>
               ) : (
                 "Complete Profile"

@@ -36,7 +36,7 @@ const Quiz = () => {
     setData: setResultData,
   } = useFetch(saveQuizResult);
 
-  console.log("printing result data", resultData);
+  // console.log("printing result data", resultData);
 
   useEffect(() => {
     if (quizData) {

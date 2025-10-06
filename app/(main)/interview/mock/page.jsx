@@ -6,21 +6,22 @@ import Quiz from "../_components/quiz";
 
 const MockInterviewPage = () => {
   return (
-    <div className="container mx-auto space-y-4 py-6">
-      <div className="flex flex-col space-y-2 mx-2">
+    <div className="container mx-auto space-y-6 py-6">
+      <div>
         <Link href={"/interview"}>
-          <Button variant="link" className="gap-2 pl-0">
+          <Button variant="ghost" className="gap-2 pl-0">
             <ArrowLeft className="h-4 w-4" />
-            Back to Interview Preparation
+            Back to Interview Prep
           </Button>
         </Link>
-
-        <div>
-          <h1 className="text-6xl font-bold gradient-title">Mock Interview</h1>
-          <p className="text-muted-foreground">
-            Test your knowledge with industry-specific questions.
-          </p>
-        </div>
+      </div>
+      <div className="text-center">
+        <h1 className="text-4xl font-bold tracking-tight lg:text-5xl gradient-title">
+          Mock Interview
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Test your knowledge with industry-specific questions.
+        </p>
       </div>
 
       <Quiz />
